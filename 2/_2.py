@@ -79,7 +79,10 @@ def recover(array, start, finish, x, y):
 
 #восстановление путем корреляции
 def correlation(array):
+    print("YOUR MATRIX: \n")
     rand_delete(array, 0)
+    Print(array)
+    print("\n")
     data = []
     while len(array) > 0:
         data.append([array.pop(), []])
@@ -93,7 +96,9 @@ def correlation(array):
                else: data[i][1].append([np.corrcoef(a, b).min(), j])
         data[i][1].sort()
 
-    for i in data: recover_correlation(i, data)
+    while full_recover(data):
+        for i in data: recover_correlation(i, data)
+    for i in range(len(data)):  data[i] = data[i][0]
     return data
 
 def recover_correlation(row, data):
@@ -104,10 +109,16 @@ def recover_correlation(row, data):
     for i in range(len(row[1])):
         for j in range(len(deleten)):
             if deleten[j] == None: continue
-            if data[row[1][i][1]][0][deleten[j]] != 0:
-                row[0][j] = data[row[1][i][1]][0][deleten[j]]
+            row_index = row[1][i][1]
+            element = data[row_index][0][deleten[j]]
+            if element != 0:
+                row[0][deleten[j]] = data[row[1][i][1]][0][deleten[j]]
                 deleten[j] = None
 
+def full_recover(data):
+    for row in data:
+        if 0 in row[0]: return True
+    return False
 
 #соединение отрезков
 def segments(x_1, x_2, y_1, y_2):
@@ -126,5 +137,13 @@ def transform(array):
         y += i
     plt.scatter(x, y, s = 5)
 
-#recovery_points(rand(20))
-print(correlation(rand(4)))
+#красивый вывод
+def Print(data):
+    col_width = max(word for row in data for word in row)
+    for row in data:
+       print(" ".join(str(word).ljust(len(str(col_width))) for word in row))
+    
+#для кореляции необходима матрица размером не меньше 11 так как чисто гипотетически во всех рядах может быть уничтожен 1  и тот же элемент
+#и восстановить его будет невозможно
+Print(correlation(rand(11)))
+recovery_points(rand(20))
